@@ -188,7 +188,11 @@ namespace PPplus_v2
 
                 if(getUser(_Username,"rank",txt_APIkey.Text) != pp_rank)
                 {
-                    if(getUser(_Username,"rank",txt_APIkey.Text) > pp_rank)
+                    if ( pp_rank == 0)
+                    {
+                        //DONT DO SHIT PLS
+                    }
+                    else if(getUser(_Username,"rank",txt_APIkey.Text) > pp_rank)
                     {
                         double newPP = getUser(_Username, "rank", txt_APIkey.Text);
                         double pp = pp_rank - newPP;
