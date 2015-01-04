@@ -1,0 +1,247 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Net;
+using System.IO;
+using MetroFramework.Forms;
+using Newtonsoft.Json;
+
+
+namespace PPplus_v2
+{
+    public partial class Form1 : MetroForm
+    {
+        private Bancho banchochat;
+
+        private bool checkedValues;
+
+        public bool connected;
+
+        private double pp_raw = 0, pp_rank = 0;
+
+        public static string _Username, _Password;
+
+
+
+        public Form1()
+        {
+            InitializeComponent();
+            this.FormClosing += new FormClosingEventHandler(Inicio_FormClosing_1);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                LoadSettings();
+            }
+            catch { }
+
+        }
+        private void Inicio_FormClosing_1(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                banchochat.Disconnect();
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void metroLink1_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://osu.ppy.sh/p/ircauth");
+        }
+
+        private void metroLink2_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://osu.ppy.sh/p/api");
+        }
+
+        private void btn_Connect_Click(object sender, EventArgs e)
+        {
+            _Username = txt_Username.Text;
+            _Password = txt_IRCpass.Text;
+
+            SaveSettings();
+
+            if (txt_APIkey.Text != "" || txt_IRCpass.Text != "" || txt_Username.Text != "")
+            {
+                if (validate(txt_Username.Text, txt_APIkey.Text) == "correct")
+                {
+                    try
+                    {
+                        banchochat = new Bancho();
+
+                        banchochat.start();
+
+                        btn_Connect.Enabled = false;
+
+                        timer1.Enabled = true;
+
+                        connected = true;
+                       
+                    }
+                    catch
+                    {
+                        btn_Connect.Enabled = true;
+                        timer1.Enabled = false;
+                        connected = false;
+                    }
+                }
+                else if (validate(txt_Username.Text, txt_APIkey.Text) == "wrongU")
+                {
+                    MessageBox.Show("Please make sure you entered the right username!", "Notification!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                }
+                else if (validate(txt_Username.Text, txt_APIkey.Text) == "wrongAPI")
+                {
+                    MessageBox.Show("Please make sure you entered the right API Key!", "Notification!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please enter your credentials!", "Notification!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+            }
+            
+        }
+
+        private string validate(string username, string apikey)
+        {
+            WebClient JSONFetch = new WebClient();
+
+            string RawJSON;
+
+            RawJSON = JSONFetch.DownloadString("https://osu.ppy.sh/api/get_user?k=" + apikey + "&u=" + username + "&m=0&type=string");
+
+            if (RawJSON == "Please provide a valid API key.")
+            {
+                return "wrongAPI";
+            }
+            else if (RawJSON == "[]")
+            {
+                return "wrongU";
+            }
+            else
+            {
+                return "correct";
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="type">You can choose between two types: "pp" and "rank"</param>
+        /// <param name="apikey"></param>
+        /// <returns></returns>
+        private double getUser(string username, string type, string apikey ) 
+        {
+            try
+            {
+                WebClient JSONFetch = new WebClient();
+
+                string RawJSON;
+                double rawPP;
+                double rankPP;
+
+
+                RawJSON = JSONFetch.DownloadString("https://osu.ppy.sh/api/get_user?k=" + apikey + "&u=" + username + "&m=0&type=string");
+
+                if (type == "pp")
+                {
+                    rawPP = ((dynamic)JsonConvert.DeserializeObject(RawJSON))[0].pp_raw;
+                    return rawPP;
+                }
+                else if (type == "rank")
+                {
+                    rankPP = ((dynamic)JsonConvert.DeserializeObject(RawJSON))[0].pp_rank;
+                    return rankPP;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            catch { return 0; }
+
+
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if(checkedValues == true)
+            {
+                if(getUser(_Username,"pp",txt_APIkey.Text) != pp_raw)
+                {
+                    double newPP = getUser(_Username, "pp", txt_APIkey.Text);
+                    double pp = newPP - pp_raw;
+                    banchochat.SendMessage("+" + (Math.Round(pp, 2).ToString() + "PP!" + " (" + (Math.Round(pp_raw, 2).ToString() + " -> " + (Math.Round(newPP, 2).ToString() + ")"))));
+                }
+
+                if(getUser(_Username,"rank",txt_APIkey.Text) != pp_rank)
+                {
+                    if(getUser(_Username,"rank",txt_APIkey.Text) > pp_rank)
+                    {
+                        double newPP = getUser(_Username, "rank", txt_APIkey.Text);
+                        double pp = pp_rank - newPP;
+                        banchochat.SendMessage(pp.ToString() + " ranks down! (" + pp_rank + " -> " + newPP + ")");
+                    }
+                    else if(getUser(_Username,"rank",txt_APIkey.Text) < pp_rank)
+                    {
+                        double newPP = getUser(_Username, "rank", txt_APIkey.Text);
+                        double pp = pp_rank - newPP;
+                        banchochat.SendMessage(pp.ToString() + " ranks up! (" + pp_rank + " -> " + newPP + ")");
+                    }
+                }
+                
+            }
+            else
+            {
+                checkedValues = true;
+            }
+
+            pp_rank = getUser(_Username, "rank", txt_APIkey.Text);
+            pp_raw = getUser(_Username, "pp", txt_APIkey.Text);
+
+
+        }
+
+        private void SaveSettings()
+        {
+            Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey("PPplus");
+            if (txt_Username.Text == "" && txt_IRCpass.Text == "" && txt_APIkey.Text == "")
+            {
+                key.SetValue("Username", "");
+                key.SetValue("Password", "");
+                key.SetValue("APIkey", "");
+            }
+            else
+            {
+                key.SetValue("Username", txt_Username.Text);
+                key.SetValue("Password", txt_IRCpass.Text);
+                key.SetValue("APIkey", txt_APIkey.Text);
+            }
+
+            
+            key.Close();
+        }
+
+        private void LoadSettings()
+        {
+            Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey("PPplus");
+            txt_Username.Text = (string)key.GetValue("Username");
+            txt_IRCpass.Text = (string)key.GetValue("Password");
+            txt_APIkey.Text = (string)key.GetValue("APIkey");
+          
+            key.Close();
+        }
+    }
+}
