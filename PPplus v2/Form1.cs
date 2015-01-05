@@ -33,6 +33,8 @@ namespace PPplus_v2
         {
             InitializeComponent();
             this.FormClosing += new FormClosingEventHandler(Inicio_FormClosing_1);
+            
+                    
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -44,6 +46,7 @@ namespace PPplus_v2
             catch { }
 
         }
+
         private void Inicio_FormClosing_1(object sender, FormClosingEventArgs e)
         {
             try
@@ -228,6 +231,7 @@ namespace PPplus_v2
                 timer1.Enabled = false;
                 
             }
+            
 
 
         }
@@ -261,5 +265,24 @@ namespace PPplus_v2
           
             key.Close();
         }
+
+        private void Form1_Resize_1(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                notifyIcon1.Visible = true;
+                notifyIcon1.ShowBalloonTip(500);
+                this.Hide();
+            }
+        }
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+            notifyIcon1.Visible = false;
+        }
+
+
     }
 }
