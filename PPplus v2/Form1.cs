@@ -21,7 +21,7 @@ namespace PPplus_v2
 
         private bool checkedValues;
 
-        public bool connected;
+        public static bool connected;
 
         private double pp_raw = 0, pp_rank = 0;
 
@@ -77,8 +77,8 @@ namespace PPplus_v2
             {
                 if (validate(txt_Username.Text, txt_APIkey.Text) == "correct")
                 {
-                    try
-                    {
+                    
+                   try{
                         banchochat = new Bancho();
 
                         banchochat.start();
@@ -188,21 +188,27 @@ namespace PPplus_v2
 
                 if(getUser(_Username,"rank",txt_APIkey.Text) != pp_rank)
                 {
-                    if ( pp_rank == 0)
-                    {
-                        //DONT DO SHIT PLS
-                    }
-                    else if(getUser(_Username,"rank",txt_APIkey.Text) > pp_rank)
+                   
+                    if(getUser(_Username,"rank",txt_APIkey.Text) > pp_rank)
                     {
                         double newPP = getUser(_Username, "rank", txt_APIkey.Text);
                         double pp = pp_rank - newPP;
-                        banchochat.SendMessage(pp.ToString() + " ranks down! (" + pp_rank + " -> " + newPP + ")");
+
+                        if(!(pp_rank == 0) || !(newPP == 0))
+                        {
+                            banchochat.SendMessage(pp.ToString() + " ranks down! (" + pp_rank + " -> " + newPP + ")");
+                        }
+                        
                     }
                     else if(getUser(_Username,"rank",txt_APIkey.Text) < pp_rank)
                     {
                         double newPP = getUser(_Username, "rank", txt_APIkey.Text);
                         double pp = pp_rank - newPP;
-                        banchochat.SendMessage(pp.ToString() + " ranks up! (" + pp_rank + " -> " + newPP + ")");
+
+                        if (!(pp_rank == 0) || !(newPP == 0))
+                        {
+                            banchochat.SendMessage(pp.ToString() + " ranks up! (" + pp_rank + " -> " + newPP + ")");
+                        }
                     }
                 }
                 
@@ -214,6 +220,14 @@ namespace PPplus_v2
 
             pp_rank = getUser(_Username, "rank", txt_APIkey.Text);
             pp_raw = getUser(_Username, "pp", txt_APIkey.Text);
+
+            if(connected == false)
+            {
+                MessageBox.Show("Error: IRC password does not match!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                btn_Connect.Enabled = true;
+                timer1.Enabled = false;
+                
+            }
 
 
         }

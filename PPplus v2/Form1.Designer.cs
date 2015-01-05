@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.metroTabControl1 = new MetroFramework.Controls.MetroTabControl();
             this.metroTabPage1 = new MetroFramework.Controls.MetroTabPage();
             this.btn_Connect = new MetroFramework.Controls.MetroButton();
@@ -78,7 +79,7 @@
             this.btn_Connect.Location = new System.Drawing.Point(125, 138);
             this.btn_Connect.Name = "btn_Connect";
             this.btn_Connect.Size = new System.Drawing.Size(75, 23);
-            this.btn_Connect.TabIndex = 10;
+            this.btn_Connect.TabIndex = 4;
             this.btn_Connect.Text = "Connect";
             this.btn_Connect.Click += new System.EventHandler(this.btn_Connect_Click);
             // 
@@ -133,7 +134,7 @@
             this.txt_IRCpass.Name = "txt_IRCpass";
             this.txt_IRCpass.PasswordChar = '•';
             this.txt_IRCpass.Size = new System.Drawing.Size(102, 23);
-            this.txt_IRCpass.TabIndex = 4;
+            this.txt_IRCpass.TabIndex = 2;
             // 
             // txt_APIkey
             // 
@@ -148,7 +149,7 @@
             this.txt_Username.Location = new System.Drawing.Point(171, 19);
             this.txt_Username.Name = "txt_Username";
             this.txt_Username.Size = new System.Drawing.Size(102, 23);
-            this.txt_Username.TabIndex = 2;
+            this.txt_Username.TabIndex = 1;
             // 
             // timer1
             // 
@@ -161,6 +162,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(394, 282);
             this.Controls.Add(this.metroTabControl1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "PP+";
             this.Load += new System.EventHandler(this.Form1_Load);

@@ -21,6 +21,7 @@ namespace PPplus_v2
             connection.Listener.OnError +=   new ErrorMessageEventHandler(OnError);
 
             connection.Listener.OnRegistered += new RegisteredEventHandler(OnRegistered);
+
         }
 
         private void CreateConnection()
@@ -35,12 +36,15 @@ namespace PPplus_v2
             connection = new Connection(cargs, false, false);
         }
 
+
+
         public void OnRegistered()
         {
             connection.Sender.PrivateMessage(Form1._Username, "Connected!");
         }
         public void start()
         {
+            
             try
             {
                 connection.Connect();
@@ -58,7 +62,7 @@ namespace PPplus_v2
 
         public void OnError(ReplyCode code, string messaeg)
         {
-
+            Form1.connected = false;
         }
 
         public void SendMessage(string message)

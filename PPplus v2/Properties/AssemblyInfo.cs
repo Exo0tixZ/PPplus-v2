@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PPplus v2")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("PP+")]
+[assembly: AssemblyDescription("Tells you how much PP and ranks you gained in the rhythm game osu!")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("exo0tixz.com")]
 [assembly: AssemblyProduct("PPplus v2")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("exo0tixz.com™")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
