@@ -28,6 +28,9 @@ namespace PPplus_v2
         public static string _Username, _Password;
 
 
+        private ContextMenu m_menu;
+
+
 
         public Form1()
         {
@@ -45,6 +48,22 @@ namespace PPplus_v2
             }
             catch { }
 
+            m_menu = new ContextMenu();
+            m_menu.MenuItems.Add(0, new MenuItem("Exit", new System.EventHandler(Exit_Click)));
+            notifyIcon1.ContextMenu = m_menu;
+        }
+        private void Exit_Click(Object sender, EventArgs e)
+        {
+            try
+            {
+                if (connected == true)
+                {
+                    banchochat.Disconnect();
+                }
+            }
+            catch { }
+            Application.Exit();
+            
         }
 
         private void Inicio_FormClosing_1(object sender, FormClosingEventArgs e)
