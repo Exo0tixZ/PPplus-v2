@@ -199,7 +199,15 @@ namespace PPplus_v2
 
                         if(!(pp_rank == 0) || !(newPP == 0))
                         {
-                            banchochat.SendMessage(pp.ToString() + " ranks down! (" + pp_rank + " -> " + newPP + ")");
+                            if(pp == 1)
+                            {
+                                banchochat.SendMessage(pp.ToString() + " rank down! (" + pp_rank + " -> " + newPP + ")");
+                            }
+                            else
+                            {
+                                banchochat.SendMessage(pp.ToString() + " ranks down! (" + pp_rank + " -> " + newPP + ")");
+                            }
+                            
                         }
                         
                     }
@@ -210,7 +218,15 @@ namespace PPplus_v2
 
                         if (!(pp_rank == 0) || !(newPP == 0))
                         {
-                            banchochat.SendMessage(pp.ToString() + " ranks up! (" + pp_rank + " -> " + newPP + ")");
+                            if(pp == 1)
+                            {
+                                banchochat.SendMessage(pp.ToString() + " rank up! (" + pp_rank + " -> " + newPP + ")");
+                            }
+                            else
+                            {
+                                banchochat.SendMessage(pp.ToString() + " ranks up! (" + pp_rank + " -> " + newPP + ")");
+                            }
+                            
                         }
                     }
                 }
