@@ -57,7 +57,10 @@ namespace PPplus_v2
 
         public void OnPrivate(UserInfo info, string message)
         {
-
+            if (message.ToLower() == "hi")
+            {
+                connection.Sender.PrivateMessage(info.Nick, "Nobody loves you");
+            }
         }
 
         public void OnError(ReplyCode code, string messaeg)

@@ -32,6 +32,11 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.metroTabControl1 = new MetroFramework.Controls.MetroTabControl();
             this.metroTabPage1 = new MetroFramework.Controls.MetroTabPage();
+            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
+            this.radio_ctb = new MetroFramework.Controls.MetroRadioButton();
+            this.radio_mania = new MetroFramework.Controls.MetroRadioButton();
+            this.radio_taiko = new MetroFramework.Controls.MetroRadioButton();
+            this.radio_std = new MetroFramework.Controls.MetroRadioButton();
             this.btn_Connect = new MetroFramework.Controls.MetroButton();
             this.metroLink2 = new MetroFramework.Controls.MetroLink();
             this.metroLink1 = new MetroFramework.Controls.MetroLink();
@@ -43,6 +48,7 @@
             this.txt_Username = new MetroFramework.Controls.MetroTextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.metroTabControl1.SuspendLayout();
             this.metroTabPage1.SuspendLayout();
             this.SuspendLayout();
@@ -53,11 +59,16 @@
             this.metroTabControl1.Location = new System.Drawing.Point(23, 63);
             this.metroTabControl1.Name = "metroTabControl1";
             this.metroTabControl1.SelectedIndex = 0;
-            this.metroTabControl1.Size = new System.Drawing.Size(360, 228);
+            this.metroTabControl1.Size = new System.Drawing.Size(322, 258);
             this.metroTabControl1.TabIndex = 0;
             // 
             // metroTabPage1
             // 
+            this.metroTabPage1.Controls.Add(this.metroLabel1);
+            this.metroTabPage1.Controls.Add(this.radio_ctb);
+            this.metroTabPage1.Controls.Add(this.radio_mania);
+            this.metroTabPage1.Controls.Add(this.radio_taiko);
+            this.metroTabPage1.Controls.Add(this.radio_std);
             this.metroTabPage1.Controls.Add(this.btn_Connect);
             this.metroTabPage1.Controls.Add(this.metroLink2);
             this.metroTabPage1.Controls.Add(this.metroLink1);
@@ -70,10 +81,65 @@
             this.metroTabPage1.HorizontalScrollbarBarColor = true;
             this.metroTabPage1.Location = new System.Drawing.Point(4, 35);
             this.metroTabPage1.Name = "metroTabPage1";
-            this.metroTabPage1.Size = new System.Drawing.Size(352, 189);
+            this.metroTabPage1.Size = new System.Drawing.Size(314, 219);
             this.metroTabPage1.TabIndex = 0;
             this.metroTabPage1.Text = "Home";
             this.metroTabPage1.VerticalScrollbarBarColor = true;
+            // 
+            // metroLabel1
+            // 
+            this.metroLabel1.AutoSize = true;
+            this.metroLabel1.ForeColor = System.Drawing.SystemColors.MenuHighlight;
+            this.metroLabel1.Location = new System.Drawing.Point(226, 204);
+            this.metroLabel1.Name = "metroLabel1";
+            this.metroLabel1.Size = new System.Drawing.Size(85, 19);
+            this.metroLabel1.TabIndex = 1;
+            this.metroLabel1.Text = "exo0tixz.com";
+            this.metroLabel1.Click += new System.EventHandler(this.metroLabel1_Click);
+            // 
+            // radio_ctb
+            // 
+            this.radio_ctb.AutoSize = true;
+            this.radio_ctb.Location = new System.Drawing.Point(231, 169);
+            this.radio_ctb.Name = "radio_ctb";
+            this.radio_ctb.Size = new System.Drawing.Size(42, 15);
+            this.radio_ctb.TabIndex = 2;
+            this.radio_ctb.TabStop = true;
+            this.radio_ctb.Text = "CtB";
+            this.radio_ctb.UseVisualStyleBackColor = true;
+            // 
+            // radio_mania
+            // 
+            this.radio_mania.AutoSize = true;
+            this.radio_mania.Location = new System.Drawing.Point(72, 169);
+            this.radio_mania.Name = "radio_mania";
+            this.radio_mania.Size = new System.Drawing.Size(78, 15);
+            this.radio_mania.TabIndex = 3;
+            this.radio_mania.TabStop = true;
+            this.radio_mania.Text = "osu!mania";
+            this.radio_mania.UseVisualStyleBackColor = true;
+            // 
+            // radio_taiko
+            // 
+            this.radio_taiko.AutoSize = true;
+            this.radio_taiko.Location = new System.Drawing.Point(161, 168);
+            this.radio_taiko.Name = "radio_taiko";
+            this.radio_taiko.Size = new System.Drawing.Size(52, 15);
+            this.radio_taiko.TabIndex = 4;
+            this.radio_taiko.TabStop = true;
+            this.radio_taiko.Text = "Taiko";
+            this.radio_taiko.UseVisualStyleBackColor = true;
+            // 
+            // radio_std
+            // 
+            this.radio_std.AutoSize = true;
+            this.radio_std.Location = new System.Drawing.Point(3, 169);
+            this.radio_std.Name = "radio_std";
+            this.radio_std.Size = new System.Drawing.Size(61, 15);
+            this.radio_std.TabIndex = 1;
+            this.radio_std.TabStop = true;
+            this.radio_std.Text = "osu!std";
+            this.radio_std.UseVisualStyleBackColor = true;
             // 
             // btn_Connect
             // 
@@ -166,11 +232,15 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
+            // timer2
+            // 
+            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(394, 282);
+            this.ClientSize = new System.Drawing.Size(365, 323);
             this.Controls.Add(this.metroTabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
@@ -199,6 +269,12 @@
         private MetroFramework.Controls.MetroButton btn_Connect;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private MetroFramework.Controls.MetroLabel metroLabel1;
+        private MetroFramework.Controls.MetroRadioButton radio_ctb;
+        private MetroFramework.Controls.MetroRadioButton radio_mania;
+        private MetroFramework.Controls.MetroRadioButton radio_taiko;
+        private MetroFramework.Controls.MetroRadioButton radio_std;
+        private System.Windows.Forms.Timer timer2;
     }
 }
 

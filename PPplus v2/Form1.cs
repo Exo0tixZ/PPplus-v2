@@ -27,6 +27,9 @@ namespace PPplus_v2
 
         public static string _Username, _Password;
 
+        private string changedMode, changedMode_old;
+
+        private bool modeChanged = false;
 
         private ContextMenu m_menu;
 
@@ -51,6 +54,11 @@ namespace PPplus_v2
             m_menu = new ContextMenu();
             m_menu.MenuItems.Add(0, new MenuItem("Exit", new System.EventHandler(Exit_Click)));
             notifyIcon1.ContextMenu = m_menu;
+
+
+            radio_std.Checked = true;
+
+            changedMode = "std";
         }
         private void Exit_Click(Object sender, EventArgs e)
         {
@@ -91,6 +99,11 @@ namespace PPplus_v2
         private void btn_Connect_Click(object sender, EventArgs e)
         {
             _Username = txt_Username.Text;
+            if (_Username.Contains(" "))
+            {
+                _Username = _Username.Replace(' ', '_');
+            }
+
             _Password = txt_IRCpass.Text;
 
             SaveSettings();
@@ -141,7 +154,13 @@ namespace PPplus_v2
 
             string RawJSON;
 
-            RawJSON = JSONFetch.DownloadString("https://osu.ppy.sh/api/get_user?k=" + apikey + "&u=" + username + "&m=0&type=string");
+            string usernameFixed = username;
+            if (username.Contains(" "))
+            {
+                usernameFixed = username.Replace(" ", "%20");
+            }
+
+            RawJSON = JSONFetch.DownloadString("https://osu.ppy.sh/api/get_user?k=" + apikey + "&u=" + usernameFixed + "&m=0&type=string");
 
             if (RawJSON == "Please provide a valid API key.")
             {
@@ -164,8 +183,132 @@ namespace PPplus_v2
         /// <param name="type">You can choose between two types: "pp" and "rank"</param>
         /// <param name="apikey"></param>
         /// <returns></returns>
-        private double getUser(string username, string type, string apikey ) 
+        private double getUser(string username, string type, string apikey)
         {
+            //mode (0 = osu!, 1 = Taiko, 2 = CtB, 3 = osu!mania).
+            string usernameFixed = username;
+            if (username.Contains(" "))
+            {
+                usernameFixed = username.Replace(" ", "%20");
+            }
+            #region osu!std
+
+            if (radio_std.Checked)
+            {
+                try
+                {
+                    WebClient JSONFetch = new WebClient();
+
+                    string RawJSON;
+                    double rawPP;
+                    double rankPP;
+
+
+                    RawJSON =
+                        JSONFetch.DownloadString("https://osu.ppy.sh/api/get_user?k=" + apikey + "&u=" + usernameFixed +
+                                                 "&m=0&type=string");
+
+                    if (type == "pp")
+                    {
+                        rawPP = ((dynamic) JsonConvert.DeserializeObject(RawJSON))[0].pp_raw;
+                        return rawPP;
+                    }
+                    else if (type == "rank")
+                    {
+                        rankPP = ((dynamic) JsonConvert.DeserializeObject(RawJSON))[0].pp_rank;
+                        return rankPP;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+
+            #endregion
+
+            #region osu!mania
+            else if (radio_mania.Checked)
+            {
+                try
+                {
+                    WebClient JSONFetch = new WebClient();
+
+                    string RawJSON;
+                    double rawPP;
+                    double rankPP;
+
+
+                    RawJSON =
+                        JSONFetch.DownloadString("https://osu.ppy.sh/api/get_user?k=" + apikey + "&u=" + usernameFixed +
+                                                 "&m=3&type=string");
+
+                    if (type == "pp")
+                    {
+                        rawPP = ((dynamic) JsonConvert.DeserializeObject(RawJSON))[0].pp_raw;
+                        return rawPP;
+                    }
+                    else if (type == "rank")
+                    {
+                        rankPP = ((dynamic) JsonConvert.DeserializeObject(RawJSON))[0].pp_rank;
+                        return rankPP;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+
+            #endregion
+
+            #region Taiko
+            else if (radio_taiko.Checked)
+            {
+                try
+                {
+                    WebClient JSONFetch = new WebClient();
+
+                    string RawJSON;
+                    double rawPP;
+                    double rankPP;
+
+
+                    RawJSON =
+                        JSONFetch.DownloadString("https://osu.ppy.sh/api/get_user?k=" + apikey + "&u=" + usernameFixed +
+                                                 "&m=1&type=string");
+
+                    if (type == "pp")
+                    {
+                        rawPP = ((dynamic)JsonConvert.DeserializeObject(RawJSON))[0].pp_raw;
+                        return rawPP;
+                    }
+                    else if (type == "rank")
+                    {
+                        rankPP = ((dynamic)JsonConvert.DeserializeObject(RawJSON))[0].pp_rank;
+                        return rankPP;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+            #endregion
+
+            #region CtB
             try
             {
                 WebClient JSONFetch = new WebClient();
@@ -175,7 +318,9 @@ namespace PPplus_v2
                 double rankPP;
 
 
-                RawJSON = JSONFetch.DownloadString("https://osu.ppy.sh/api/get_user?k=" + apikey + "&u=" + username + "&m=0&type=string");
+                RawJSON =
+                    JSONFetch.DownloadString("https://osu.ppy.sh/api/get_user?k=" + apikey + "&u=" + usernameFixed +
+                                             "&m=2&type=string");
 
                 if (type == "pp")
                 {
@@ -192,68 +337,89 @@ namespace PPplus_v2
                     return 0;
                 }
             }
-            catch { return 0; }
-
-
+            catch
+            {
+                return 0;
+            }
+            #endregion
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if(checkedValues == true)
+            if (modeChanged)
             {
-                if(getUser(_Username,"pp",txt_APIkey.Text) != pp_raw)
+                #region PP Change
+
+                if (checkedValues == true)
                 {
-                    double newPP = getUser(_Username, "pp", txt_APIkey.Text);
-                    double pp = newPP - pp_raw;
-                    banchochat.SendMessage("+" + (Math.Round(pp, 2).ToString() + "PP!" + " (" + (Math.Round(pp_raw, 2).ToString() + " -> " + (Math.Round(newPP, 2).ToString() + ")"))));
+
+                    if (getUser(_Username, "pp", txt_APIkey.Text) != pp_raw)
+                    {
+                        double newPP = getUser(_Username, "pp", txt_APIkey.Text);
+                        double pp = newPP - pp_raw;
+                        banchochat.SendMessage("+" +
+                                               (Math.Round(pp, 2).ToString() + "PP!" + " (" +
+                                                (Math.Round(pp_raw, 2).ToString() + " -> " +
+                                                 (Math.Round(newPP, 2).ToString() + ")"))));
+                    }
+
+                    if (getUser(_Username, "rank", txt_APIkey.Text) != pp_rank)
+                    {
+
+                        if (getUser(_Username, "rank", txt_APIkey.Text) > pp_rank)
+                        {
+                            double newPP = getUser(_Username, "rank", txt_APIkey.Text);
+                            double pp = newPP - pp_rank;
+
+                            if (!(pp_rank == 0) || !(newPP == 0))
+                            {
+                                if (pp == 1)
+                                {
+                                    banchochat.SendMessage(pp.ToString() + " rank down! (" + pp_rank + " -> " + newPP +
+                                                           ")");
+                                }
+                                else
+                                {
+                                    banchochat.SendMessage(pp.ToString() + " ranks down! (" + pp_rank + " -> " + newPP +
+                                                           ")");
+                                }
+
+                            }
+
+                        }
+                        else if (getUser(_Username, "rank", txt_APIkey.Text) < pp_rank)
+                        {
+                            double newPP = getUser(_Username, "rank", txt_APIkey.Text);
+                            double pp = pp_rank - newPP;
+
+                            if (!(pp_rank == 0) || !(newPP == 0))
+                            {
+                                if (pp == 1)
+                                {
+                                    banchochat.SendMessage(pp.ToString() + " rank up! (" + pp_rank + " -> " + newPP +
+                                                           ")");
+                                }
+                                else
+                                {
+                                    banchochat.SendMessage(pp.ToString() + " ranks up! (" + pp_rank + " -> " + newPP +
+                                                           ")");
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    checkedValues = true;
                 }
 
-                if(getUser(_Username,"rank",txt_APIkey.Text) != pp_rank)
-                {
-                   
-                    if(getUser(_Username,"rank",txt_APIkey.Text) > pp_rank)
-                    {
-                        double newPP = getUser(_Username, "rank", txt_APIkey.Text);
-                        double pp = pp_rank - newPP;
-
-                        if(!(pp_rank == 0) || !(newPP == 0))
-                        {
-                            if(pp == 1)
-                            {
-                                banchochat.SendMessage(pp.ToString() + " rank down! (" + pp_rank + " -> " + newPP + ")");
-                            }
-                            else
-                            {
-                                banchochat.SendMessage(pp.ToString() + " ranks down! (" + pp_rank + " -> " + newPP + ")");
-                            }
-                            
-                        }
-                        
-                    }
-                    else if(getUser(_Username,"rank",txt_APIkey.Text) < pp_rank)
-                    {
-                        double newPP = getUser(_Username, "rank", txt_APIkey.Text);
-                        double pp = pp_rank - newPP;
-
-                        if (!(pp_rank == 0) || !(newPP == 0))
-                        {
-                            if(pp == 1)
-                            {
-                                banchochat.SendMessage(pp.ToString() + " rank up! (" + pp_rank + " -> " + newPP + ")");
-                            }
-                            else
-                            {
-                                banchochat.SendMessage(pp.ToString() + " ranks up! (" + pp_rank + " -> " + newPP + ")");
-                            }
-                            
-                        }
-                    }
-                }
-                
+                #endregion
             }
             else
             {
-                checkedValues = true;
+                modeChanged = false;
             }
 
             pp_rank = getUser(_Username, "rank", txt_APIkey.Text);
@@ -316,6 +482,40 @@ namespace PPplus_v2
             this.Show();
             this.WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
+        }
+
+        private void metroLabel1_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://exo0tixz.com");
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+
+            if (radio_std.Checked)
+            {
+                changedMode = "std";
+            }
+            else if (radio_mania.Checked)
+            {
+                changedMode = "mania";
+            }
+            else if (radio_taiko.Checked)
+            {
+                changedMode = "taiko";
+            }
+            else if (radio_ctb.Checked)
+            {
+                changedMode = "ctb";
+            }
+
+
+            if (changedMode != changedMode_old)
+            {
+                modeChanged = true;
+            }
+
+            changedMode_old = changedMode;
         }
 
 
