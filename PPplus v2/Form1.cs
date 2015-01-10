@@ -31,6 +31,8 @@ namespace PPplus_v2
 
         private bool modeChanged = false;
 
+        public string version = "1.2.2";
+
         private ContextMenu m_menu;
 
 
@@ -59,6 +61,23 @@ namespace PPplus_v2
             radio_std.Checked = true;
 
             changedMode = "std";
+
+
+            #region Updater
+            WebClient UpdateFetch = new WebClient();
+
+            string versiondownload = UpdateFetch.DownloadString("http://exo0tixz.com/pp_updates");
+            if (versiondownload != version)
+            {
+                MessageBox.Show(
+                    "New Update available (v." + versiondownload +
+                    "). Website for the download will open after you close this message.", "Update available!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                System.Diagnostics.Process.Start("https://github.com/Exo0tixZ/PPplus-v2");
+            }
+
+            #endregion
+
         }
         private void Exit_Click(Object sender, EventArgs e)
         {
